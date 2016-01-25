@@ -1,6 +1,7 @@
 package container551
 
 import (
+	"github.com/go51/cookie551"
 	"github.com/go51/log551"
 	"net/http"
 )
@@ -10,6 +11,7 @@ type Container struct {
 	w      http.ResponseWriter
 	r      *http.Request
 	logger *log551.Log551
+	cookie *cookie551.Cookie
 }
 
 func New() *Container {
@@ -46,4 +48,12 @@ func (c *Container) SetLogger(logger *log551.Log551) {
 
 func (c *Container) Logger() *log551.Log551 {
 	return c.logger
+}
+
+func (c *Container) SetCookie(cookie *cookie551.Cookie) {
+	c.cookie = cookie
+}
+
+func (c *Container) Cookie() *cookie551.Cookie {
+	return c.cookie
 }
