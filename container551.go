@@ -3,6 +3,7 @@ package container551
 import (
 	"github.com/go51/cookie551"
 	"github.com/go51/log551"
+	"github.com/go51/mysql551"
 	"net/http"
 )
 
@@ -12,6 +13,7 @@ type Container struct {
 	r      *http.Request
 	logger *log551.Log551
 	cookie *cookie551.Cookie
+	db     *mysql551.Mysql
 }
 
 func New() *Container {
@@ -56,4 +58,12 @@ func (c *Container) SetCookie(cookie *cookie551.Cookie) {
 
 func (c *Container) Cookie() *cookie551.Cookie {
 	return c.cookie
+}
+
+func (c *Container) SetDb(db *mysql551.Mysql) {
+	c.db = db
+}
+
+func (c *Container) Db() *mysql551.Mysql {
+	return c.db
 }
