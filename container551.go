@@ -4,6 +4,7 @@ import (
 	"github.com/go51/cookie551"
 	"github.com/go51/log551"
 	"github.com/go51/memcache551"
+	"github.com/go51/model551"
 	"github.com/go51/mysql551"
 	"net/http"
 )
@@ -16,6 +17,7 @@ type Container struct {
 	cookie  *cookie551.Cookie
 	db      *mysql551.Mysql
 	session *memcache551.Memcache
+	model   *model551.Model
 }
 
 func New() *Container {
@@ -76,4 +78,12 @@ func (c *Container) SetSession(session *memcache551.Memcache) {
 
 func (c *Container) Session() *memcache551.Memcache {
 	return c.session
+}
+
+func (c *Container) SetModel(modelManager *model551.Model) {
+	c.model = modelManager
+}
+
+func (c *Container) ModelManager() *model551.Model {
+	return c.model
 }
