@@ -1,6 +1,7 @@
 package container551
 
 import (
+	"github.com/go51/auth551"
 	"github.com/go51/cookie551"
 	"github.com/go51/log551"
 	"github.com/go51/memcache551"
@@ -18,6 +19,7 @@ type Container struct {
 	db      *mysql551.Mysql
 	session *memcache551.Memcache
 	model   *model551.Model
+	auth    *auth551.Auth
 }
 
 func New() *Container {
@@ -86,4 +88,12 @@ func (c *Container) SetModel(modelManager *model551.Model) {
 
 func (c *Container) ModelManager() *model551.Model {
 	return c.model
+}
+
+func (c *Container) SetAuth(auth *auth551.Auth) {
+	c.auth = auth
+}
+
+func (c *Container) Auth() *auth551.Auth {
+	return c.auth
 }
