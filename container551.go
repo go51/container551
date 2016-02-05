@@ -95,7 +95,6 @@ func (c *Container) ModelManager() *model551.Model {
 }
 
 func (c *Container) SetAuth(auth *auth551.Auth) {
-	l := c.logger
 	c.auth = auth
 
 	if c.user != nil {
@@ -103,10 +102,7 @@ func (c *Container) SetAuth(auth *auth551.Auth) {
 	}
 
 	// Load user
-	l.Debugf("%s [ SetAuth - Load user ]------------------------------", c.sid[:10])
 	c.session.GetModel("reminder_user", &c.user)
-	l.Debugf("%s c.user: %#v", c.sid[:10], c.user)
-	l.Debugf("%s [/SetAuth - Load user ]------------------------------", c.sid[:10])
 
 	return
 
@@ -117,30 +113,19 @@ func (c *Container) Auth() *auth551.Auth {
 }
 
 func (c *Container) SignIn(user *auth551.UserModel) {
-	l := c.logger
-	l.Debugf("%s [ SignIn ]------------------------------", c.sid[:10])
 	// Set remind id to cookie
 	id := string551.Right("0000000000000000"+strconv.FormatInt(user.Id, 10), 16)
 	secureId := secure551.Encrypted(id, c.auth.MasterKey())
 	c.cookie.Set(c.auth.CookieKeyName(), secureId, 60*60*24*365)
-	l.Debugf("%s Cookie.KEY:   %s", c.sid[:10], c.auth.CookieKeyName())
-	l.Debugf("%s Cookie.VALUE: %s", c.sid[:10], secureId)
-	l.Debugf("%s - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ", c.sid[:10])
 
 	// Set user model to session
 	c.session.Set("reminder_user", user)
-	l.Debugf("%s Session.User: %#v", c.sid[:10], user)
-	l.Debugf("%s [/SignIn ]------------------------------", c.sid[:10])
 
 }
 
 func (c *Container) Logout() {
-	l := c.logger
-
-	l.Debugf("%s [ Logout ]------------------------------", c.sid[:10])
 	c.cookie.Delete(c.auth.CookieKeyName())
 	c.session.Delete("user")
-	l.Debugf("%s [/Logout ]------------------------------", c.sid[:10])
 }
 
 func (c *Container) IsLogin() bool {
