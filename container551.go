@@ -7,6 +7,7 @@ import (
 	"github.com/go51/memcache551"
 	"github.com/go51/model551"
 	"github.com/go51/mysql551"
+	"github.com/go51/repository551"
 	"github.com/go51/secure551"
 	"github.com/go51/string551"
 	"net/http"
@@ -101,11 +102,51 @@ func (c *Container) SetAuth(auth *auth551.Auth) {
 		return
 	}
 
-	// Load user
+	// Load user from session
 	c.session.GetModel("reminder_user", &c.user)
+
+	// Get user id from cookie
+	id, err := c.getRemindId()
+	if err != nil {
+		return
+	}
+
+	// Get user model from database
+	c.user = c.getUser(id)
+
+	// Set user model to session
+	c.session.Set("reminder_user", c.user)
 
 	return
 
+}
+
+func (c *Container) getRemindId() (int64, error) {
+	cookieId, err := c.cookie.Get(c.auth.CookieKeyName())
+	if err != nil {
+		return 0, err
+	}
+
+	sid := secure551.Decrypted(cookieId, c.auth.MasterKey())
+	id, err := strconv.ParseInt(sid, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+
+}
+
+func (c *Container) getUser(id int64) *auth551.UserModel {
+	repo := repository551.Load()
+	miUser := c.ModelManager().Get("UserModel")
+	mUser := repo.Find(c.db, miUser, id)
+	user, ok := mUser.(*auth551.UserModel)
+	if !ok {
+		return nil
+	}
+
+	return user
 }
 
 func (c *Container) Auth() *auth551.Auth {
