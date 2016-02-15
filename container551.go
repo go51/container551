@@ -10,6 +10,7 @@ import (
 	"github.com/go51/repository551"
 	"github.com/go51/secure551"
 	"github.com/go51/string551"
+	xoauth2 "golang.org/x/oauth2"
 	"net/http"
 	"strconv"
 )
@@ -175,4 +176,30 @@ func (c *Container) IsLogin() bool {
 
 func (c *Container) User() *auth551.UserModel {
 	return c.user
+}
+
+func (c *Container) ApiClient(vendor auth551.AuthVendor) *http.Client {
+	if c.user == nil {
+		return nil
+	}
+	repo := repository551.Load()
+	miUserToken := c.model.Get("UserTokenModel")
+	param := map[string]interface{}{
+		"user_id": c.user.Id,
+	}
+	mUserToken := repo.FindOneBy(c.db, miUserToken, param)
+	userToken, ok := mUserToken.(*auth551.UserTokenModel)
+	if !ok {
+		return nil
+	}
+
+	token := &xoauth2.Token{
+		AccessToken:  userToken.AccessToken,
+		TokenType:    userToken.TokenType,
+		RefreshToken: userToken.RefreshToken,
+		Expiry:       userToken.Expiry,
+	}
+
+	return c.auth.Client(vendor, token)
+
 }
