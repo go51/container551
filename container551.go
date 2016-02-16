@@ -26,6 +26,7 @@ type Container struct {
 	model   *model551.Model
 	auth    *auth551.Auth
 	user    *auth551.UserModel
+	options map[string]string
 }
 
 func New() *Container {
@@ -202,4 +203,12 @@ func (c *Container) ApiClient(vendor auth551.AuthVendor) *http.Client {
 
 	return c.auth.Client(vendor, token)
 
+}
+
+func (c *Container) SetCommandOptions(options map[string]string) {
+	c.options = options
+}
+
+func (c *Container) CommandOption(name string) string {
+	return c.options[name]
 }
