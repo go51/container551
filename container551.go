@@ -17,6 +17,7 @@ import (
 
 type Container struct {
 	sid     string
+	ssid    string
 	w       http.ResponseWriter
 	r       *http.Request
 	logger  *log551.Log551
@@ -35,10 +36,14 @@ func New() *Container {
 
 func (c *Container) SetSID(sid string) {
 	c.sid = sid
+	c.ssid = sid[:10]
 }
 
 func (c *Container) SID() string {
 	return c.sid
+}
+func (c *Container) SSID() string {
+	return c.ssid
 }
 
 func (c *Container) SetResponseWriter(w http.ResponseWriter) {
