@@ -171,12 +171,12 @@ func (c *Container) SignIn(user *auth551.UserModel) {
 
 }
 
-func (c *Container) Logout() {
+func (c *Container) SignOut() {
 	c.cookie.Delete(c.auth.CookieKeyName())
-	c.session.Delete("user")
+	c.session.Delete("reminder_user")
 }
 
-func (c *Container) IsLogin() bool {
+func (c *Container) IsSignIn() bool {
 	return c.user != nil
 }
 
