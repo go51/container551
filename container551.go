@@ -1,6 +1,7 @@
 package container551
 
 import (
+	"errors"
 	"github.com/go51/auth551"
 	"github.com/go51/cookie551"
 	"github.com/go51/log551"
@@ -15,19 +16,22 @@ import (
 	"strconv"
 )
 
+type urlFunc func(name string, parameter ...string) string
+
 type Container struct {
-	sid     string
-	ssid    string
-	w       http.ResponseWriter
-	r       *http.Request
-	logger  *log551.Log551
-	cookie  *cookie551.Cookie
-	db      *mysql551.Mysql
-	session *memcache551.Memcache
-	model   *model551.Model
-	auth    *auth551.Auth
-	user    *auth551.UserModel
-	options map[string]string
+	sid         string
+	ssid        string
+	w           http.ResponseWriter
+	r           *http.Request
+	logger      *log551.Log551
+	cookie      *cookie551.Cookie
+	db          *mysql551.Mysql
+	session     *memcache551.Memcache
+	model       *model551.Model
+	auth        *auth551.Auth
+	user        *auth551.UserModel
+	options     map[string]string
+	urlFunction urlFunc
 }
 
 func New() *Container {
@@ -216,4 +220,35 @@ func (c *Container) SetCommandOptions(options map[string]string) {
 
 func (c *Container) CommandOption(name string) string {
 	return c.options[name]
+}
+
+func (c *Container) Segment(number int) string {
+	c.logger.Debugf("%s [ URL.Path ] %s", c.ssid, c.r.URL.Path[1:])
+	paths := string551.Split(c.r.URL.Path[1:], "/")
+	c.logger.Debugf("%s [ URL.Path ] %#v", c.ssid, paths)
+	if len(paths) < number+1 {
+		return ""
+	}
+	return paths[number]
+}
+
+func (c *Container) SegmentInt64(number int) (int64, error) {
+	c.logger.Debugf("%s [ URL.Path ] %s", c.ssid, c.r.URL.Path[1:])
+	paths := string551.Split(c.r.URL.Path[1:], "/")
+	c.logger.Debugf("%s [ URL.Path ] %#v", c.ssid, paths)
+	if len(paths) < number+1 {
+		return 0, errors.New("invalid memory address or nil pointer dereference")
+	}
+	segment := paths[number]
+
+	return strconv.ParseInt(segment, 10, 64)
+
+}
+
+func (c *Container) SetUrlFunc(urlFunction urlFunc) {
+	c.urlFunction = urlFunction
+}
+
+func (c *Container) URL(name string, parameter ...string) string {
+	return c.urlFunction(name, parameter...)
 }
