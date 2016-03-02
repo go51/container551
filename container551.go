@@ -187,6 +187,10 @@ func (c *Container) User() *auth551.UserModel {
 	return c.user
 }
 
+func (c *Container) UpdateUser(user *auth551.UserModel) {
+	c.user = user
+}
+
 func (c *Container) SetCommandOptions(options map[string]string) {
 	c.options = options
 }
