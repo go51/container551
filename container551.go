@@ -31,6 +31,7 @@ type Container struct {
 	user        *auth551.UserModel
 	options     map[string]string
 	urlFunction urlFunc
+	baseUrl     string
 }
 
 func New() *Container {
@@ -226,6 +227,14 @@ func (c *Container) SetUrlFunc(urlFunction urlFunc) {
 	c.urlFunction = urlFunction
 }
 
+func (c *Container) SetBaseURL(url string) {
+	c.baseUrl = url
+}
+
 func (c *Container) URL(name string, parameter ...string) string {
 	return c.urlFunction(name, parameter...)
+}
+
+func (c *Container) URLAbs(name string, parameter ...string) string {
+	return c.baseUrl + c.urlFunction(name, parameter...)
 }
